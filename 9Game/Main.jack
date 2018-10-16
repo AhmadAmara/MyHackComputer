@@ -1,0 +1,22 @@
+
+/** Initializes a new Nim game and starts running it. */
+class Main {
+    function void main() {
+        var NimGame game;
+        do Output.printString("WELCOME TO THE NIM GAME!!! BEWARE NOT TO TAKE THE LAST STICK!!!!");
+		do Output.printString("THE GAME WILL START WITHIN 5 SECONDS!!!");
+
+		
+		do Sys.wait(5000);
+		
+		do Screen.setColor(false);
+		do Screen.drawRectangle(0, 0, 511, 22);
+
+		do Output.moveCursor(0,0);
+	
+        let game = NimGame.new();
+        do game.run();
+        do game.dispose();
+        return;
+    }
+}

@@ -1,0 +1,72 @@
+/**
+* This chip is an extension of the book CPU by using the extended ALU.
+* More specificly if instruction[15]==0 or (instruction[14] and instruction[13] equals 1)
+* the CpuMul behave exactly as the book CPU.
+* While if it is C instruction and instruction[13] == 0 the output will be D*A/M 
+* (according to instruction[12]).
+* Moreover, if it is c instruction and instruction[14] == 0 it will behave as follows:
+*
+* instruction:  | 12 | 11 | 10 |
+* _____________________________
+* shift left D  | 0  | 1  | 1  |
+* shift left A  | 0  | 1  | 0  |
+* shift left M  | 1  | 1  | 0  |
+* shift right D | 0  | 0  | 1  |
+* shift right A | 0  | 0  | 0  |
+* shift right M | 1  | 0  | 0  |
+**/
+
+CHIP CpuMul{
+
+    IN  inM[16],         // M value input  (M = contents of RAM[A])
+        instruction[16], // Instruction for execution
+        reset;           // Signals whether to re-start the current
+                         // program (reset=1) or continue executing
+                         // the current program (reset=0).
+
+    OUT outM[16],        // M value output
+        writeM,          // Write into M? 
+        addressM[15],    // Address in data memory (of M)
+        pc[15];          // address of next instruction
+
+     PARTS:
+     
+		ARegister(in=out1, load=ALoad, out=AReg,out[0..14]=addressM);
+		
+		Mux16(a=instruction, b=AluOut,sel=instruction[15],out=out1);
+
+		Not(in=instruction[15], out=AIns);
+        Or(a=AIns, b=instruction[5], out=ALoad);
+		Mux16(a=AReg, b=inM, sel=instruction[12], out=out2);
+		And(a=instruction[4], b=instruction[15], out=dChange);
+		
+		
+        DRegister(in=AluOut, load=dChange, out=DReg);
+
+		ExtendAlu(x=DReg, y= out2 ,instruction=instruction[6..14] ,out=AluOut, zr=zrOut, ng=ngOut);
+		
+		And(a=instruction[15], b=instruction[3], out=wTom);
+		Mux16(b=AluOut, sel=wTom, out=outM);
+
+		And(a=instruction[3], b=instruction[15], out=writeM);
+		
+
+		
+		// Determine JMP condition, lt := out < 0, zr := out == 0
+		Or(a=ngOut, b=zrOut, out=lte);
+		Not(in=lte, out=gt);
+			
+			
+		And(a=instruction[1], b=zrOut, out=jeq); 
+		And(a=instruction[2], b=ngOut, out=jlt);
+		And(a=instruction[0], b=gt, out=jgt);     
+		Or(a=jlt, b=jeq, out=jle);
+		Or(a=jle, b=jgt, out=jmp);
+		And(a=instruction[15], b=jmp, out=loadPc); // only load PC if C-inst and other conditions met
+		Not(in=loadPc, out=incPc);
+		PC(in=AReg, load=loadPc, inc=incPc, reset=reset, out[0..14]=pc);
+
+     
+}
+
+

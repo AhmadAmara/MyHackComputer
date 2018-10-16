@@ -1,0 +1,295 @@
+
+/**
+ * Implements the Nim game.
+ * This is a simple Nim game for 2 players that allows to each player
+ * to choose in each turn the number of row to take sticks from (ranges from
+ * 1 to 4, while 1 represents the top most row and 4 represents the bottom most row.
+ * only a valid choice can be received in each turn, and the game stops when there
+ * are no more sticks left in the board, and the winner is the one who didn't take
+ * the last stick from the board.
+ */
+
+
+class NimGame {
+   
+   field int row; // the player's current row:
+                        // 0=none, 1=top-most row, 2=second row, 3=third row, 4=bottom-most row
+
+   field int sticksLeft; // the number of sticks left in the board
+
+   field int sticksLeftInRow1; // the number of sticks left in row 1
+
+   field int sticksLeftInRow2; // the number of sticks left in row 2
+
+   field int sticksLeftInRow3; // the number of sticks left in row 3
+
+   field int sticksLeftInRow4; // the number of sticks left in row 4
+
+   field int sticksLeftInChosenRow; // the number of sticks left in the current chosen row
+
+   field int sticksToRemove; // the number of sticks the current player chose to remove
+
+   field boolean turnOfPlayer1; // is it the turn of player 1 or not
+
+   field boolean rowWasChosen; // is a valid row was chosen in the current turn
+
+   field boolean numOfSticksWasChosen; // is a valid number of sticks to remove from the board was chosen
+
+   field Array first_X_Coordinate_For_Rows_2_To_4; // an array for the first X coordinate of left most stick in rows 2 to 4
+
+
+   /** Constructs a new Nim Game. */
+   constructor NimGame new() {
+
+      let row = 0;  // initial state is no choice of row
+      let sticksLeft = 16;
+      let sticksLeftInRow1 = 1;
+      let sticksLeftInRow2 = 3;
+      let sticksLeftInRow3 = 5;
+      let sticksLeftInRow4 = 7;
+      let sticksLeftInChosenRow = 0;
+      let sticksToRemove = 0;
+      let turnOfPlayer1 = true;
+      let first_X_Coordinate_For_Rows_2_To_4 = Array.new(3);
+      let first_X_Coordinate_For_Rows_2_To_4[0] = 211;
+      let first_X_Coordinate_For_Rows_2_To_4[1] = 171;
+      let first_X_Coordinate_For_Rows_2_To_4[2] = 131;
+      let numOfSticksWasChosen = false;
+      let rowWasChosen = false;
+
+	
+      do draw();
+
+      return this;
+   }
+
+   /** Disposes this game. */
+   method void dispose() {
+      do Memory.deAlloc(this);
+      return;
+   }
+
+      /** Draws the board on the screen. */
+   method void draw() {
+      do Screen.setColor(true);
+
+      // Draw all the sticks:
+      do Screen.drawRectangle(251, 50, 261, 80);
+      do Screen.drawRectangle(251, 90, 261, 120);
+      do Screen.drawRectangle(251, 130, 261, 160);
+      do Screen.drawRectangle(251, 170, 261, 200);
+      do Screen.drawRectangle(291, 90, 301, 120);
+      do Screen.drawRectangle(291, 130, 301, 160);
+      do Screen.drawRectangle(291, 170, 301, 200);
+      do Screen.drawRectangle(331, 170, 341, 200);
+      do Screen.drawRectangle(331, 130, 341, 160);
+      do Screen.drawRectangle(371, 170, 381, 200);
+      do Screen.drawRectangle(211, 90, 221, 120);
+      do Screen.drawRectangle(211, 130, 221, 160);
+      do Screen.drawRectangle(211, 170, 221, 200);
+      do Screen.drawRectangle(171, 130, 181, 160);
+      do Screen.drawRectangle(171, 170, 181, 200);
+      do Screen.drawRectangle(131, 170, 141, 200);
+
+      // Draw the numbers of the rows:
+
+      // Row 4 number.
+      do Screen.drawLine(40, 170, 40, 200);
+      do Screen.drawLine(30, 170, 30, 200);
+      do Screen.drawLine(20, 170, 20, 200);
+      do Screen.drawLine(10, 170, 10, 200);
+
+      // Row 3 number.
+      do Screen.drawLine(80, 130, 80, 160);
+      do Screen.drawLine(70, 130, 70, 160);
+      do Screen.drawLine(60, 130, 60, 160);
+
+      // Row 2 number.
+      do Screen.drawLine(120, 90, 120, 120);
+      do Screen.drawLine(110, 90, 110, 120);
+
+      // Row 1 number.
+      do Screen.drawLine(160, 50, 160, 80);
+
+      return;
+   }
+
+/** runs the Nim game until there are no more sticks. */
+   method void run() {
+		
+		
+         var int key;  // the key number currently pressed by the user
+
+				
+         while (~(sticksLeft = 0)) {
+
+
+         // the player choose a row or to quit.
+         // only a legal choice can be received.
+
+         while (~(rowWasChosen)){
+		if(turnOfPlayer1)
+		{
+		do Output.printString("TURN OF PLAYER 1 | ");
+		}
+		else
+		{
+		do Output.printString("TURN OF PLAYER 2 | ");
+		}
+
+        let key =  Keyboard.readInt("CHOOSE A ROW NUMBER, FROM 1 (TOP ROW) TO 4: ");
+      	do Screen.setColor(false);
+		do Screen.drawRectangle(0, 0, 511, 11);
+		do Output.moveCursor(0,0);
+		
+
+
+         if ((key = 1) & ~(sticksLeftInRow1 = 0))  { let row = 1;
+         let sticksLeftInChosenRow = sticksLeftInRow1;
+         let rowWasChosen = true;}         // 1 key
+         if ((key = 2) & ~(sticksLeftInRow2 = 0))  { let row = 2;
+         let sticksLeftInChosenRow = sticksLeftInRow2;
+         let rowWasChosen = true;}         // 2 key
+         if ((key = 3) & ~(sticksLeftInRow3 = 0))  { let row = 3;
+         let sticksLeftInChosenRow = sticksLeftInRow3;
+         let rowWasChosen = true;}         // 3 key
+         if ((key = 4) & ~(sticksLeftInRow4 = 0))  { let row = 4;
+         let sticksLeftInChosenRow = sticksLeftInRow4;
+         let rowWasChosen = true;}         // 4 key
+         }
+
+         let rowWasChosen = false;
+
+         // waits for the key to be released
+                  while (~(key = 0)) {
+                     let key = Keyboard.keyPressed();
+                  }
+
+
+         // the player choose the number of sticks to remove from the board or to quit.
+         // only a legal choice can be received.
+
+         while (~(numOfSticksWasChosen)) {
+
+         let key =  Keyboard.readInt("CHOOSE A NUMBER OF STICKS TO REMOVE - FROM 1 TO 7 (IF EXISTS): ");
+      	do Screen.setColor(false);
+		do Screen.drawRectangle(0, 0, 511, 20);
+		do Output.moveCursor(0,0);		
+
+		if(turnOfPlayer1)
+		{
+			let turnOfPlayer1 = false;
+		}
+		else
+		{
+			let turnOfPlayer1 = true;
+		}
+
+         if ((key = 1) & ~(sticksLeftInChosenRow < 1)) {let sticksToRemove = 1;
+         let numOfSticksWasChosen = true;}  // remove 1 stick from the chosen row.
+
+         if ((key = 2) & ~(sticksLeftInChosenRow < 2)) {let sticksToRemove = 2;
+         let numOfSticksWasChosen = true;}  // remove 2 sticks from the chosen row.
+
+         if ((key = 3) & ~(sticksLeftInChosenRow < 3)) {let sticksToRemove = 3;
+         let numOfSticksWasChosen = true;}  // remove 3 sticks from the chosen row.
+
+         if ((key = 4) & ~(sticksLeftInChosenRow < 4)) {let sticksToRemove = 4;
+         let numOfSticksWasChosen = true;}  // remove 4 sticks from the chosen row.
+
+         if ((key = 5) & ~(sticksLeftInChosenRow < 5)) {let sticksToRemove = 5;
+         let numOfSticksWasChosen = true;}  // remove 5 sticks from the chosen row.
+
+         if ((key = 6) & ~(sticksLeftInChosenRow < 6)) {let sticksToRemove = 6;
+         let numOfSticksWasChosen = true;}  // remove 6 sticks from the chosen row.
+
+         if ((key = 7) & ~(sticksLeftInChosenRow < 7)) {let sticksToRemove = 7;
+         let numOfSticksWasChosen = true;}  // remove 7 sticks from the chosen row.
+         }
+
+         let numOfSticksWasChosen = false;
+
+         // waits for the key to be released
+                           while (~(key = 0)) {
+                              let key = Keyboard.keyPressed();
+                           }
+
+         do erase(row, sticksToRemove);
+
+         }
+         if(turnOfPlayer1)
+         {
+			do Output.moveCursor(0,0);
+			do Output.printString("PLAYER 1 WINS ! ! ! !");
+         }
+         else
+         {
+			do Output.moveCursor(0,0);
+			do Output.printString("PLAYER 2 WINS ! ! ! !");
+         }
+      
+    return;
+   }
+
+/** Erases the current chosen sticks from the screen. */
+   method void erase(int row, int sticksToRemove) {
+
+        var int i;
+        let i = 0;
+
+        if (row = 1) { do Screen.setColor(false);
+                             do Screen.drawRectangle(251, 50, 261, 80);
+                             let sticksLeftInRow1 = 0;
+                             let sticksLeft = sticksLeft - 1; }
+        if (row = 2) {
+
+            let i = first_X_Coordinate_For_Rows_2_To_4[0];
+            let i = i + 10;
+            let i = i + Math.multiply(40 ,(sticksToRemove - 1));
+
+            do Screen.setColor(false);
+            do Screen.drawRectangle(first_X_Coordinate_For_Rows_2_To_4[0], 90, i, 120);
+            let sticksLeftInRow2 = sticksLeftInRow2 - sticksToRemove;
+            let sticksLeft = sticksLeft - sticksToRemove;
+            let i = i + 30;
+            let first_X_Coordinate_For_Rows_2_To_4[0] = i;
+
+        }
+
+
+        if (row = 3) {
+
+            let i = first_X_Coordinate_For_Rows_2_To_4[1];
+            let i = i + 10;
+            let i = i + (40 * (sticksToRemove - 1));
+
+            do Screen.setColor(false);
+            do Screen.drawRectangle(first_X_Coordinate_For_Rows_2_To_4[1], 130, i, 160);
+            let sticksLeftInRow3 = sticksLeftInRow3 - sticksToRemove;
+            let sticksLeft = sticksLeft - sticksToRemove;
+            let i = i + 30;
+            let first_X_Coordinate_For_Rows_2_To_4[1] = i;
+
+        }
+
+
+        if (row = 4) {
+
+            let i = first_X_Coordinate_For_Rows_2_To_4[2];
+            let i = i + 10;
+            let i = i + (40 * (sticksToRemove - 1));
+
+            do Screen.setColor(false);
+            do Screen.drawRectangle(first_X_Coordinate_For_Rows_2_To_4[2], 170, i, 200);
+            let sticksLeftInRow4 = sticksLeftInRow4 - sticksToRemove;
+            let sticksLeft = sticksLeft - sticksToRemove;
+            let i = i + 30;
+            let first_X_Coordinate_For_Rows_2_To_4[2] = i;
+
+        }
+
+    return;
+
+   }
+
+}

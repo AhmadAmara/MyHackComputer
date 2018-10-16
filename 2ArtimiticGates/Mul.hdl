@@ -1,0 +1,64 @@
+CHIP Mul{
+    IN a[16], b[16];
+    OUT out[16];
+
+    PARTS:
+		
+		// these code lines executed the multiple between tow
+		// binary numbers like decimal muliplaction
+		
+		Mux16(a=false, b=a, sel=b[0], out=out1);
+		ShiftLeft(in=a, out=shOut1);
+		Mux16(a=false, b=shOut1, sel=b[1], out=out2);
+		ShiftLeft(in=shOut1, out=shOut2);
+		Mux16(a=false, b=shOut2, sel=b[2], out=out3);
+		ShiftLeft(in=shOut2, out=shOut3);
+		Mux16(a=false, b=shOut3, sel=b[3], out=out4);
+		ShiftLeft(in=shOut3, out=shOut4);
+		Mux16(a=false, b=shOut4, sel=b[4], out=out5);
+		ShiftLeft(in=shOut4, out=shOut5);
+		Mux16(a=false, b=shOut5, sel=b[5], out=out6);
+		ShiftLeft(in=shOut5, out=shOut6);
+		Mux16(a=false, b=shOut6, sel=b[6], out=out7);
+		ShiftLeft(in=shOut6, out=shOut7);
+		Mux16(a=false, b=shOut7, sel=b[7], out=out8);
+		ShiftLeft(in=shOut7, out=shOut8);
+		Mux16(a=false, b=shOut8, sel=b[8], out=out9);
+		ShiftLeft(in=shOut8, out=shOut9);
+		Mux16(a=false, b=shOut9, sel=b[9], out=out10);
+		ShiftLeft(in=shOut9, out=shOut10);
+		Mux16(a=false, b=shOut10, sel=b[10], out=out11);
+		ShiftLeft(in=shOut10, out=shOut11);
+		Mux16(a=false, b=shOut11, sel=b[11], out=out12);
+		ShiftLeft(in=shOut11, out=shOut12);
+		Mux16(a=false, b=shOut12, sel=b[12], out=out13);
+		ShiftLeft(in=shOut12, out=shOut13);
+		Mux16(a=false, b=shOut13, sel=b[13], out=out14);
+		ShiftLeft(in=shOut13, out=shOut14);
+		Mux16(a=false, b=shOut14, sel=b[14], out=out15);
+		ShiftLeft(in=shOut14, out=shOut15);
+		Mux16(a=false, b=shOut15, sel=b[15], out=out16);
+		
+		
+		// these code lines calculate the total sum
+		Add16(a=out1, b=out2, out=outt1);
+		Add16(a=outt1, b=out3, out=outt2);
+		Add16(a=outt2, b=out4, out=outt3);
+		Add16(a=outt3, b=out5, out=outt4);
+		Add16(a=outt4, b=out6, out=outt5);
+		Add16(a=outt5, b=out7, out=outt6);
+		Add16(a=outt6, b=out8, out=outt7);
+		Add16(a=outt7, b=out9, out=outt8);
+		Add16(a=outt8, b=out10, out=outt9);
+		Add16(a=outt9, b=out11, out=outt10);
+		Add16(a=outt10, b=out12, out=outt11);
+		Add16(a=outt11, b=out13, out=outt12);
+		Add16(a=outt12, b=out14, out=outt13);
+		Add16(a=outt13, b=out15, out=outt14);
+		Add16(a=outt14, b=out16, out=outSum);
+		
+		Xor(a=a[15], b=b[15], out=sign);
+		
+		Mux16(b=outSum, b[15]=sign, sel=true,out=out);
+		
+}
